@@ -10,10 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   go_router: any
   flutter_riverpod: any
   flutter_contacts: any
-  call_log: any
+  call_log: ^6.0.1        # pinned — older versions break AGP 8.9+
   permission_handler: any
   url_launcher: any
   flutter_animate: any
@@ -22,7 +23,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: any
 
 flutter:
   uses-material-design: true
