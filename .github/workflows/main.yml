@@ -24,15 +24,16 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # ── 3. Set up Flutter (latest stable, no version pin) ─────────────
+      # ── 3. Set up Flutter 3.24.5 (pinned stable, Dart 3.5.x) ──────────
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.24.5'
           channel: stable
           cache: true
 
-      # ── 4. Print versions for debugging ───────────────────────────────
-      - name: Print Flutter & Dart version
+      # ── 4. Print versions ──────────────────────────────────────────────
+      - name: Print versions
         run: |
           flutter --version
           dart --version
