@@ -1,13 +1,13 @@
 enum CallDirection { incoming, outgoing, missed, rejected, blocked, unknown }
 
-class CallLogEntry {
+class PhoneCallLog {
   final String? name;
   final String number;
   final CallDirection direction;
   final DateTime timestamp;
   final Duration duration;
 
-  const CallLogEntry({
+  const PhoneCallLog({
     this.name,
     required this.number,
     required this.direction,
