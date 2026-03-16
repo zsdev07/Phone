@@ -10,28 +10,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # Navigation
-  go_router: ^14.0.0
-
-  # State management
-  flutter_riverpod: ^3.3.0
-
-  # Contacts & Call Log
-  flutter_contacts: ^1.1.9+2
-  call_log: ^6.0.1
-
-  # Permissions
-  permission_handler: ^11.3.1
-
-  # URL launcher (fallback dialing)
-  url_launcher: ^6.3.0
-
-  # Animations
-  flutter_animate: ^4.5.0
-
-  # Icons
-  cupertino_icons: ^1.0.8
+  go_router: any
+  flutter_riverpod: any
+  flutter_contacts: any
+  call_log: any
+  permission_handler: any
+  url_launcher: any
+  flutter_animate: any
+  cupertino_icons: any
 
 dev_dependencies:
   flutter_test:
