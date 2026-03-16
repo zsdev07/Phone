@@ -1,34 +1,29 @@
-import 'package:call_log/call_log.dart';
+import 'package:call_log/call_log.dart' as cl;
 import 'package:permission_handler/permission_handler.dart';
 import '../shared/models/call_log_model.dart';
 
 class CallLogService {
-  /// Request READ_CALL_LOG permission.
   static Future<bool> requestPermission() async {
     final status = await Permission.phone.request();
     return status.isGranted;
   }
 
-  /// Check if READ_CALL_LOG permission is granted.
   static Future<bool> hasPermission() async {
     return await Permission.phone.isGranted;
   }
 
-  /// Load call log entries, most recent first.
-  /// [limit] — how many entries to fetch (default 100).
-  static Future<List<CallLogEntry>> getAll({int limit = 100}) async {
+  static Future<List<PhoneCallLog>> getAll({int limit = 100}) async {
     final granted = await requestPermission();
     if (!granted) return [];
 
-    final raw = await CallLog.get();
+    final raw = await cl.CallLog.get();
     final entries = raw
         .take(limit)
-        .map((e) => CallLogEntry(
+        .map((e) => PhoneCallLog(
               name: e.name,
               number: e.number ?? 'Unknown',
               direction: _mapType(e.callType),
-              timestamp: DateTime.fromMillisecondsSinceEpoch(
-                  e.timestamp ?? 0),
+              timestamp: DateTime.fromMillisecondsSinceEpoch(e.timestamp ?? 0),
               duration: Duration(seconds: e.duration ?? 0),
             ))
         .toList();
@@ -36,21 +31,20 @@ class CallLogService {
     return entries;
   }
 
-  /// Filter entries by direction type.
-  static List<CallLogEntry> filter(
-      List<CallLogEntry> all, CallDirection? direction) {
+  static List<PhoneCallLog> filter(
+      List<PhoneCallLog> all, CallDirection? direction) {
     if (direction == null) return all;
     return all.where((e) => e.direction == direction).toList();
   }
 
-  static CallDirection _mapType(CallType? type) {
+  static CallDirection _mapType(cl.CallType? type) {
     return switch (type) {
-      CallType.incoming => CallDirection.incoming,
-      CallType.outgoing => CallDirection.outgoing,
-      CallType.missed   => CallDirection.missed,
-      CallType.rejected => CallDirection.rejected,
-      CallType.blocked  => CallDirection.blocked,
-      _                 => CallDirection.unknown,
+      cl.CallType.incoming => CallDirection.incoming,
+      cl.CallType.outgoing => CallDirection.outgoing,
+      cl.CallType.missed   => CallDirection.missed,
+      cl.CallType.rejected => CallDirection.rejected,
+      cl.CallType.blocked  => CallDirection.blocked,
+      _                    => CallDirection.unknown,
     };
   }
 }
