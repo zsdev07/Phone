@@ -13,8 +13,8 @@ class RecentsScreen extends StatefulWidget {
 }
 
 class _RecentsScreenState extends State<RecentsScreen> {
-  List<CallLogEntry> _all = [];
-  List<CallLogEntry> _filtered = [];
+  List<PhoneCallLog> _all = [];
+  List<PhoneCallLog> _filtered = [];
   CallDirection? _activeFilter;
   bool _loading = true;
   bool _permissionDenied = false;
@@ -183,7 +183,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
 // ── Call Log Tile ────────────────────────────────────────────────────────────
 
 class _CallLogTile extends StatelessWidget {
-  final CallLogEntry entry;
+  final PhoneCallLog entry;
   const _CallLogTile({required this.entry});
 
   IconData get _dirIcon {
