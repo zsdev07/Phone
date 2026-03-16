@@ -1,11 +1,13 @@
 package zx.offical.phone
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.telecom.TelecomManager
 import android.os.Build
+import android.telecom.TelecomManager
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -33,8 +35,6 @@ class MainActivity : FlutterActivity() {
         ).setStreamHandler(object : EventChannel.StreamHandler {
             override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
                 callStateEventSink = events
-
-                // Hook into InCallService callbacks
                 PhoneInCallService.onCallStateChanged = { state, number, _ ->
                     runOnUiThread {
                         callStateEventSink?.success(mapOf(
@@ -89,10 +89,10 @@ class MainActivity : FlutterActivity() {
                     result.success(null)
                 }
 
-                "isDefaultDialer"     -> result.success(isDefaultDialer())
+                "isDefaultDialer"      -> result.success(isDefaultDialer())
 
                 "requestDefaultDialer" -> {
-                    requestDefaultDialer()
+                    requestDefaultDialerCompat()
                     result.success(null)
                 }
 
@@ -104,29 +104,15 @@ class MainActivity : FlutterActivity() {
                     result.success(true)
                 }
 
-                // ── In-call controls ──────────────────────────────────────
-                "endCall"   -> {
-                    PhoneInCallService.endCurrentCall()
-                    result.success(true)
-                }
-                "answerCall" -> {
-                    PhoneInCallService.answerCurrentCall()
-                    result.success(true)
-                }
-                "holdCall"  -> {
-                    PhoneInCallService.holdCurrentCall()
-                    result.success(true)
-                }
-                "unholdCall" -> {
-                    PhoneInCallService.unholdCurrentCall()
-                    result.success(true)
-                }
+                "endCall"    -> { PhoneInCallService.endCurrentCall();    result.success(true) }
+                "answerCall" -> { PhoneInCallService.answerCurrentCall(); result.success(true) }
+                "holdCall"   -> { PhoneInCallService.holdCurrentCall();   result.success(true) }
+                "unholdCall" -> { PhoneInCallService.unholdCurrentCall(); result.success(true) }
 
                 else -> result.notImplemented()
             }
         }
 
-        // If launched from active call notification, show in-call screen
         if (intent?.getBooleanExtra("show_incall", false) == true) {
             callStateEventSink?.success(mapOf("state" to "restore_incall", "number" to ""))
         }
@@ -147,6 +133,8 @@ class MainActivity : FlutterActivity() {
         pendingNumber = null
     }
 
+    // ── Helpers ───────────────────────────────────────────────────────────
+
     private fun sanitizeNumber(number: String) =
         number.replace(Regex("[^+0-9*#]"), "")
 
@@ -166,11 +154,13 @@ class MainActivity : FlutterActivity() {
         return telecom.defaultDialerPackage == packageName
     }
 
-    private fun requestDefaultDialer() {
+    @SuppressLint("NewApi")
+    private fun requestDefaultDialerCompat() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            (getSystemService(TELECOM_SERVICE) as TelecomManager)
-                .requestDefaultDialer(packageName)
+            val telecom = getSystemService(TELECOM_SERVICE) as TelecomManager
+            telecom.requestDefaultDialer(packageName)
         } else {
+            @Suppress("DEPRECATION")
             startActivity(Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER).apply {
                 putExtra(
                     TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME,
